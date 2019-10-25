@@ -14,7 +14,6 @@ class Raman :
     def __init__(self, filename):
         #initilize atributes 
         self.metadata_values = {}
-        self.data_dict = {}
         self.data_list = []
         self.filename = filename 
         
@@ -24,23 +23,18 @@ class Raman :
         
         File_object = open(filename_string,"r") #load file 
         lines = File_object.readlines() #build iterator
-        
-        #these lists are for storing the data into dictionaries 
-        wavelength_list = []
-        intensity_list= []
-        
-        data_array = np.zeros((1024,2),dtype=float)
+                
+        data_array = np.zeros((1024,2),dtype=float) #this is for storing the data 
         #intensity_array = np.zeros((1024,),dtype=float)
 
         
         on_metadata = True 
         #this code is for processing the metadata and storing it in a dictionary 
-        run_number = 1 
         filename_list= [self.files_location,self.filename]
         filename_string = "".join(filename_list)
         File_object = open(filename_string,"r")
         lines = File_object.readlines()
-        i = 0 
+        i = 0 #line number 
         for line in lines:
             if(line=="\n"):
                 on_metadata = False 
@@ -69,32 +63,23 @@ class Raman :
             splt_line = line.split("	")
             if(len(splt_line) != 3):
                 continue 
-            wavelength = float(splt_line[0])
-            intensity = float(splt_line[1])
-            if(len(wavelength_list)!=0 and wavelength<wavelength_list[-1]): #if the wavelengths go back to the start point, restart things 
-                print(i)
-                self.data_dict[run_number] = (wavelength_list,intensity_list)
+            #if you go through one whole dataset  if(len(wavelength_list)!=0 and wavelength<wavelength_list[-1]): #if the wavelengths go back to the start point, restart things 
+            if(i>=1024):
                 self.data_list.append(data_array)
-                data_array = np.zeros((1024,2),dtype=float)
-                run_number += 1 
-                wavelength_list = []
-                intensity_list = []
+                data_array = np.zeros((1024,2),dtype=float) #clears data array for next round 
                 i = 0 
 
-                #break 
-            #[wavelength,intensity] = line.split("	")
-            wavelength_list.append(wavelength)
-            intensity_list.append(intensity)
+            wavelength = float(splt_line[0])
+            intensity = float(splt_line[1])
             data_array[i,0] = wavelength
             data_array[i,1] = intensity
+            
             i += 1 
 
-            #self.wavelength_dict[wavelength]=intensity 
                     
       
 test = Raman("20191015_SebStripe_20181115-22_trypsin_100x_dilution_on_20mM_Cysteamine_Wash_WetState_60X_4mW_SPOT1_2.txt")
 plt.figure(num=2, figsize=(20, 15), dpi=80, facecolor='w', edgecolor='k')
-d = test.data_dict
 #for k in d.keys():
 i = 0 
 for d in test.data_list:
