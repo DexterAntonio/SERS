@@ -6,7 +6,7 @@ Created on Fri Oct 25 11:42:32 2019
 """
 import pandas as pd 
 import matplotlib.pyplot as plt
-import numpy as np 
+import numpy as np  
 
 class Raman :
     """An class to store SERS data and analyze it """
