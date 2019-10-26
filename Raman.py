@@ -27,7 +27,7 @@ class Raman :
         data_array = np.zeros((1024,2),dtype=float) #this is for storing the data 
         #intensity_array = np.zeros((1024,),dtype=float)
 
-        
+            
         on_metadata = True 
         #this code is for processing the metadata and storing it in a dictionary 
         filename_list= [self.files_location,self.filename]
@@ -36,7 +36,7 @@ class Raman :
         lines = File_object.readlines()
         i = 0 #line number 
         for line in lines:
-            if(line=="\n"):
+            if(line=="\n"): #determines when metadata ends and spectra data begins 
                 on_metadata = False 
                 continue 
             if(on_metadata):
@@ -53,26 +53,31 @@ class Raman :
                             
                     if (not colon_encountered): #if you are iterating through the key 
                         data_name.append(c)
+                        continue 
                     else:
                         if(c=="\n"): #skip newline characters 
                             continue 
                         data_values.append(c)
+                        continue 
                     
                 self.metadata_values["".join(data_name)]="".join(data_values)
             #processing numerical data 
+            if(on_metadata):
+                continue 
             splt_line = line.split("	")
-            if(len(splt_line) != 3):
+            if(len(splt_line) != 3): #skips nondata 
+                print("I am called")
+                print(line)
                 continue 
             #if you go through one whole dataset  if(len(wavelength_list)!=0 and wavelength<wavelength_list[-1]): #if the wavelengths go back to the start point, restart things 
             if(i>=1024):
                 self.data_list.append(data_array)
                 data_array = np.zeros((1024,2),dtype=float) #clears data array for next round 
-                i = 0 
-
+                #i = 0 
             wavelength = float(splt_line[0])
             intensity = float(splt_line[1])
-            data_array[i,0] = wavelength
-            data_array[i,1] = intensity
+            data_array[i%1024,0] = wavelength
+            data_array[i%1024,1] = intensity
             
             i += 1 
 
