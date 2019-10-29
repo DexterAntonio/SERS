@@ -82,20 +82,21 @@ class Raman :
             i += 1 
 
                     
-      
+#      
 test = Raman("20191015_SebStripe_20181115-22_trypsin_100x_dilution_on_20mM_Cysteamine_Wash_WetState_60X_4mW_SPOT1_2.txt")
 plt.figure(num=2, figsize=(20, 15), dpi=80, facecolor='w', edgecolor='k')
-#for k in d.keys():
-i = 0 
-for d in test.data_list:
-    i += 1 
+
+#for i in range
+#i = 0 
+#for d in test.data_list:
+#   i += 1 
     #xy = d[k]
     #x = xy[0]
     #y = xy[1]
     #plt.plot(x,y,'-')
-    plt.plot(d[:,0],d[:,1],label=i)
-plt.legend()
-    
+#   plt.plot(d[:,0],d[:,1],label=i)
+#plt.legend()
+#    
 
 #plt.plot(test.wavelength_list,test.intensity_list,'-')
 #for i in range(0,len())
