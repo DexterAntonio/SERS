@@ -11,7 +11,7 @@ import numpy as np
 class Raman :
     """An class to store SERS data and analyze it """
     files_location = "C:/Users/dexte/Box/Kulkarni/Raman/data/Raman_Spectra_Clinical_Samples/Raman_Spectra_Clinical_Samples/20181115-22/" 
-    def __init__(self, filename):
+    def __init__(self, filename): #initalizes a Raman object from a text file 
         #initilize atributes 
         self.metadata_values = {}
         self.data_list = []
@@ -80,19 +80,65 @@ class Raman :
             data_array[i,1] = intensity
             
             i += 1 
+    def get_metadata(self,file_iterator):
+        metadata_values = {} #creates dictionary to return 
+        for line in file_iterator:
+            if(line=="\n"): #determines when metadata ends and spectra data begins 
+                return metadata_values
+            data_name = []
+            data_values = []
+            colon_encountered = False 
+            iterline = iter(line)
+            for c in iterline: 
+                if(not colon_encountered and c==":"):
+                    colon_encountered = True  
+                    c = next(iterline) 
+                    while(c==" "):
+                        c = next(iterline) #iterates through all whitespace between key and date     
+                if (not colon_encountered): #if you are iterating through the key 
+                    data_name.append(c)
+                    continue 
+                else:
+                    if(c=="\n"): #skip newline characters 
+                        continue 
+                    data_values.append(c)
+                    continue 
+                
+            metadata_values["".join(data_name)]="".join(data_values) #adds name and value to a dictionary 
+        print("something is wrong with get_metadata")
+        return metadata_values    
+    def get_file_spectra(self,file_iterator):
+        i =0 
+        data_list = []
+        data_array = np.zeros((1024,2),dtype=float) #this is for storing the data 
 
-                    
-#      
+        for line in file_iterator: 
+            if(line=="\n"): #skips new line characters at the begining of the file 
+                continue 
+            splt_line = line.split("	")
+            if(len(splt_line) != 3): #skips nondata 
+                print("I am called")
+                print(line)
+                continue 
+            #if you go through one whole dataset  if(len(wavelength_list)!=0 and wavelength<wavelength_list[-1]): #if the wavelengths go back to the start point, restart things 
+            if(i>=1024):
+                data_list.append(data_array)
+                data_array = np.zeros((1024,2),dtype=float) #clears data array for next round 
+                i = 0 
+            wavelength = float(splt_line[0])
+            intensity = float(splt_line[1])
+            data_array[i,0] = wavelength
+            data_array[i,1] = intensity
+         
+            i += 1
+        return data_list 
+    
 test = Raman("20191015_SebStripe_20181115-22_trypsin_100x_dilution_on_20mM_Cysteamine_Wash_WetState_60X_4mW_SPOT1_2.txt")
 plt.figure(num=2, figsize=(20, 15), dpi=80, facecolor='w', edgecolor='k')
 
 i = 0 
 for d in test.data_list:
    i += 1 
-    #xy = d[k]
-    #x = xy[0]
-    #y = xy[1]
-    #plt.plot(x,y,'-')
    plt.plot(d[:,0],d[:,1],label=i)
 plt.legend()
     
