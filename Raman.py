@@ -8,25 +8,31 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np    
 
-class Raman :
+class Raman_File :
     """An class to store SERS data and analyze it """
-    files_location = "C:/Users/dexte/Box/Kulkarni/Raman/data/Raman_Spectra_Clinical_Samples/Raman_Spectra_Clinical_Samples/20181115-22/" 
     def __init__(self, filename): #initalizes a Raman object from a text file 
         #initilize atributes 
+        self.files_location = "C:/Users/dexte/Box/Kulkarni/Raman/data/Raman_Spectra_Clinical_Samples/Raman_Spectra_Clinical_Samples/20181115-22/" 
         self.metadata_values = {}
         self.data_list = []
-        self.filename = filename 
-        
+        self.filename_string = filename 
+        self.average_spectra = np.zeros((1024,2),dtype=float)
+
         #build filename strings 
-        filename_list= [self.files_location,self.filename]
-        filename_string = "".join(filename_list)
+        #filename_list= [self.files_location,self.filename]
+        #filename_string = "".join(filename_list)
            
         #File_object = open(filename_string,"r")
         #iter_lines = iter(File_object.readlines())
         #iter_lines = iter(lines)
+        
+        
         with open(filename_string) as infile:
             self.metadata_values = self.get_metadata(infile)
             self.data_list = self.get_file_spectra(infile)
+       
+        self.average_spectra = self.get_average()
+
         #print(self.get_metadata(lines))
         #print(self.get_file_spectra(lines))
         
@@ -83,16 +89,45 @@ class Raman :
          
             i += 1
         return data_list 
-    
-test = Raman("20191015_SebStripe_20181115-22_trypsin_100x_dilution_on_20mM_Cysteamine_Wash_WetState_60X_4mW_SPOT1_2.txt")
-plt.figure(num=2, figsize=(20, 15), dpi=80, facecolor='w', edgecolor='k')
+    def get_average(self):
+        average_data_array = np.zeros((1024,2),dtype=float)
+        for arr in self.data_list:
+            average_data_array += arr 
+        average_data_array = average_data_array/len(self.data_list)
+        return average_data_array
+    def plot_average(self):
+        plt.figure(num=None, figsize=(10, 7.5), dpi=80, facecolor='w', edgecolor='k')
+        x = self.average_spectra[:,0]
+        y = self.average_spectra[:,1]
+        plt.plot(x,y,'-',linewidth=2.0,color='k')
+        #x =0 
+    def plot_all(self):
+        plt.figure(num=2, figsize=(10, 7.5), dpi=80, facecolor='w', edgecolor='k')
+        x = self.average_spectra[:,0]
+        y = self.average_spectra[:,1]
+        i = 0 
+        for d in test.data_list:
+           i += 1 
+           plt.plot(d[:,0],d[:,1],label=i)
+        plt.plot(x,y,'-',linewidth=7.0,color='k',label="average")
+        plt.legend()
 
-i = 0 
-for d in test.data_list:
-   i += 1 
-   plt.plot(d[:,0],d[:,1],label=i)
-plt.legend()
     
+location = "C:/Users/dexte/Box/Kulkarni/Raman/data/Raman_Spectra_Clinical_Samples/Raman_Spectra_Clinical_Samples/20181115-22/"        
+file_name = "20191015_SebStripe_20181115-22_trypsin_100x_dilution_on_20mM_Cysteamine_Wash_WetState_60X_4mW_SPOT1_2.txt"
+filename_list= [location,file_name]
+filename_string = "".join(filename_list)
+test = Raman_File(filename_string)
+#plt.figure(num=2, figsize=(10, 7.5), dpi=80, facecolor='w', edgecolor='k')
+#avgxy = test.get_average()
+#i = 0 
+#for d in test.data_list:
+#   i += 1 
+#   plt.plot(d[:,0],d[:,1],label=i)
+#plt.legend()
+#plt.plot(avgxy[:,0],avgxy[:,1],'-',linewidth=7.0,color='k')
+#
+#    
 
 #plt.plot(test.wavelength_list,test.intensity_list,'-')
 #for i in range(0,len())
