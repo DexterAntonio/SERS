@@ -2,7 +2,7 @@
 """
 Created on Fri Oct 25 11:42:32 2019
 
-@author: dexte
+@author: dexter 
 """
 import pandas as pd 
 import matplotlib.pyplot as plt
@@ -19,7 +19,7 @@ class Raman_Spot:
         self.filename_string = filename 
         self.average_spectra = np.zeros((1024,2),dtype=float)        
         
-        with open(filename_string) as infile: #opens file and then stores 
+        with open(self.filename_string) as infile: #opens file and then stores 
             self.metadata_values = self.get_metadata(infile)
             self.data_list = self.get_file_spectra(infile)
        
@@ -102,6 +102,7 @@ class Raman_Spot:
 
 class Raman_Folder:
     def __init__(self,root_location,folder_name):
+        self.folder_name = folder_name
         glob_cmd = root_location+folder_name+"*.txt"
         self.file_list = glob.glob(glob_cmd)
         self.raman_spot_dict = {}
@@ -112,37 +113,37 @@ class Raman_Folder:
     def plot_everything(self):
         avearge_list = []
         name_list = []
-        plt.figure(num=2, figsize=(10, 7.5), dpi=80, facecolor='w', edgecolor='k')
+        plt.figure(num=None, figsize=(10, 7.5), dpi=80, facecolor='w', edgecolor='k')
         for key, raman_spot in self.raman_spot_dict.items():
             avearge_list.append(raman_spot.get_average())
             name_list.append(key)
         i = 0
         for avg in avearge_list:
             plt.plot(avg[:,0],avg[:,1]+i*100,'-',label=name_list[i]) #offset for visualization 
-            print(i)
             i+= 1
         plt.legend()
+        plt.title(self.folder_name)
     def plot_specific_spot(self,key):
         self.raman_spot_dict[key].plot_average()
         #print(file_list)
  
        
-location = "C:/Users/dexte/Box/Kulkarni/Raman/data/Raman_Spectra_Clinical_Samples/Raman_Spectra_Clinical_Samples/20181115-22/"        
-file_name = "20191015_SebStripe_20181115-22_trypsin_100x_dilution_on_20mM_Cysteamine_Wash_WetState_60X_4mW_SPOT1_2.txt"
-filename_list= [location,file_name]
-filename_string = "".join(filename_list)
-#test = Raman_Spot(filename_string)
-
-#testing raman folder class
-
-root_location = location = "C:/Users/dexte/Box/Kulkarni/Raman/data/Raman_Spectra_Clinical_Samples/Raman_Spectra_Clinical_Samples/"        
-folder_name = "20181115-22/"
-
-Folder_test = Raman_Folder(root_location,folder_name)
-Folder_test.plot_everything()
-
-##spot_index = name.find("SPOT",0,len(name))
-#print(name[spot_index+4:spot_index+7])
+#location = "C:/Users/dexte/Box/Kulkarni/Raman/data/Raman_Spectra_Clinical_Samples/Raman_Spectra_Clinical_Samples/20181115-22/"        
+#file_name = "20191015_SebStripe_20181115-22_trypsin_100x_dilution_on_20mM_Cysteamine_Wash_WetState_60X_4mW_SPOT1_2.txt"
+#filename_list= [location,file_name]
+#filename_string = "".join(filename_list)
+##test = Raman_Spot(filename_string)
+#
+##testing raman folder class
+#
+#root_location = location = "C:/Users/dexte/Box/Kulkarni/Raman/data/Raman_Spectra_Clinical_Samples/Raman_Spectra_Clinical_Samples/"        
+#folder_name = "20181115-22/"
+#
+#Folder_test = Raman_Folder(root_location,folder_name)
+#Folder_test.plot_everything()
+#
+###spot_index = name.find("SPOT",0,len(name))
+##print(name[spot_index+4:spot_index+7])
 #test = Raman_Spot(name)
 
 #plt.figure(num=2, figsize=(10, 7.5), dpi=80, facecolor='w', edgecolor='k')
