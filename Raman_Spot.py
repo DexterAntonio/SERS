@@ -7,8 +7,9 @@ Created on Fri Oct 25 11:42:32 2019
 import pandas as pd 
 import matplotlib.pyplot as plt
 import numpy as np    
+import glob as glob 
 
-class Raman_File :
+class Raman_Spot:
     """An class to store SERS data and analyze it """
     def __init__(self, filename): #initalizes a Raman object from a text file 
         #initilize atributes 
@@ -16,25 +17,13 @@ class Raman_File :
         self.metadata_values = {}
         self.data_list = []
         self.filename_string = filename 
-        self.average_spectra = np.zeros((1024,2),dtype=float)
-
-        #build filename strings 
-        #filename_list= [self.files_location,self.filename]
-        #filename_string = "".join(filename_list)
-           
-        #File_object = open(filename_string,"r")
-        #iter_lines = iter(File_object.readlines())
-        #iter_lines = iter(lines)
-        
+        self.average_spectra = np.zeros((1024,2),dtype=float)        
         
         with open(filename_string) as infile:
             self.metadata_values = self.get_metadata(infile)
             self.data_list = self.get_file_spectra(infile)
        
         self.average_spectra = self.get_average()
-
-        #print(self.get_metadata(lines))
-        #print(self.get_file_spectra(lines))
         
     def get_metadata(self,file_iterator):
         metadata_values = {} #creates dictionary to return 
@@ -95,12 +84,11 @@ class Raman_File :
             average_data_array += arr 
         average_data_array = average_data_array/len(self.data_list)
         return average_data_array
-    def plot_average(self):
-        plt.figure(num=None, figsize=(10, 7.5), dpi=80, facecolor='w', edgecolor='k')
+    def plot_average(self,fig_number=1):
+        plt.figure(num=fig_number, figsize=(10, 7.5), dpi=80, facecolor='w', edgecolor='k')
         x = self.average_spectra[:,0]
         y = self.average_spectra[:,1]
         plt.plot(x,y,'-',linewidth=2.0,color='k')
-        #x =0 
     def plot_all(self):
         plt.figure(num=2, figsize=(10, 7.5), dpi=80, facecolor='w', edgecolor='k')
         x = self.average_spectra[:,0]
@@ -112,12 +100,50 @@ class Raman_File :
         plt.plot(x,y,'-',linewidth=7.0,color='k',label="average")
         plt.legend()
 
-    
+class Raman_Folder:
+    def __init__(self,root_location,folder_name):
+        glob_cmd = root_location+folder_name+"*.txt"
+        self.file_list = glob.glob(glob_cmd)
+        self.raman_spot_dict = {}
+        for filename in self.file_list:
+            spot_index = filename.find("SPOT",0,len(name))
+            key = filename[spot_index+4:spot_index+7]
+            self.raman_spot_dict[key] = Raman_Spot(filename)
+    def plot_everything(self):
+        avearge_list = []
+        name_list = []
+        plt.figure(num=2, figsize=(10, 7.5), dpi=80, facecolor='w', edgecolor='k')
+        for key, raman_spot in self.raman_spot_dict.items():
+            avearge_list.append(raman_spot.get_average())
+            name_list.append(key)
+        i = 0
+        for avg in avearge_list:
+            plt.plot(avg[:,0],avg[:,1]+i*100,'-',label=name_list[i])
+            print(i)
+            i+= 1
+        plt.legend()
+    def plot_specific_spot(self,f)
+        #print(file_list)
+ 
+       
 location = "C:/Users/dexte/Box/Kulkarni/Raman/data/Raman_Spectra_Clinical_Samples/Raman_Spectra_Clinical_Samples/20181115-22/"        
 file_name = "20191015_SebStripe_20181115-22_trypsin_100x_dilution_on_20mM_Cysteamine_Wash_WetState_60X_4mW_SPOT1_2.txt"
 filename_list= [location,file_name]
 filename_string = "".join(filename_list)
-test = Raman_File(filename_string)
+#test = Raman_Spot(filename_string)
+
+#testing raman folder class
+
+root_location = location = "C:/Users/dexte/Box/Kulkarni/Raman/data/Raman_Spectra_Clinical_Samples/Raman_Spectra_Clinical_Samples/"        
+folder_name = "20181115-22/"
+
+Folder_test = Raman_Folder(root_location,folder_name)
+Folder_test.plot_everything()
+
+##spot_index = name.find("SPOT",0,len(name))
+#print(name[spot_index+4:spot_index+7])
+#test = Raman_Spot(name)
+
 #plt.figure(num=2, figsize=(10, 7.5), dpi=80, facecolor='w', edgecolor='k')
 #avgxy = test.get_average()
 #i = 0 
