@@ -73,11 +73,11 @@ class Raman :
             if(i>=1024):
                 self.data_list.append(data_array)
                 data_array = np.zeros((1024,2),dtype=float) #clears data array for next round 
-                #i = 0 
+                i = 0 
             wavelength = float(splt_line[0])
             intensity = float(splt_line[1])
-            data_array[i%1024,0] = wavelength
-            data_array[i%1024,1] = intensity
+            data_array[i,0] = wavelength
+            data_array[i,1] = intensity
             
             i += 1 
 
@@ -86,17 +86,16 @@ class Raman :
 test = Raman("20191015_SebStripe_20181115-22_trypsin_100x_dilution_on_20mM_Cysteamine_Wash_WetState_60X_4mW_SPOT1_2.txt")
 plt.figure(num=2, figsize=(20, 15), dpi=80, facecolor='w', edgecolor='k')
 
-#for i in range
-#i = 0 
-#for d in test.data_list:
-#   i += 1 
+i = 0 
+for d in test.data_list:
+   i += 1 
     #xy = d[k]
     #x = xy[0]
     #y = xy[1]
     #plt.plot(x,y,'-')
-#   plt.plot(d[:,0],d[:,1],label=i)
-#plt.legend()
-#    
+   plt.plot(d[:,0],d[:,1],label=i)
+plt.legend()
+    
 
 #plt.plot(test.wavelength_list,test.intensity_list,'-')
 #for i in range(0,len())
