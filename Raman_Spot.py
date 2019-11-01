@@ -19,7 +19,7 @@ class Raman_Spot:
         self.filename_string = filename 
         self.average_spectra = np.zeros((1024,2),dtype=float)        
         
-        with open(filename_string) as infile:
+        with open(filename_string) as infile: #opens file and then stores 
             self.metadata_values = self.get_metadata(infile)
             self.data_list = self.get_file_spectra(infile)
        
@@ -94,7 +94,7 @@ class Raman_Spot:
         x = self.average_spectra[:,0]
         y = self.average_spectra[:,1]
         i = 0 
-        for d in test.data_list:
+        for d in self.data_list:
            i += 1 
            plt.plot(d[:,0],d[:,1],label=i)
         plt.plot(x,y,'-',linewidth=7.0,color='k',label="average")
@@ -106,7 +106,7 @@ class Raman_Folder:
         self.file_list = glob.glob(glob_cmd)
         self.raman_spot_dict = {}
         for filename in self.file_list:
-            spot_index = filename.find("SPOT",0,len(name))
+            spot_index = filename.find("SPOT",0,len(filename))
             key = filename[spot_index+4:spot_index+7]
             self.raman_spot_dict[key] = Raman_Spot(filename)
     def plot_everything(self):
@@ -118,11 +118,12 @@ class Raman_Folder:
             name_list.append(key)
         i = 0
         for avg in avearge_list:
-            plt.plot(avg[:,0],avg[:,1]+i*100,'-',label=name_list[i])
+            plt.plot(avg[:,0],avg[:,1]+i*100,'-',label=name_list[i]) #offset for visualization 
             print(i)
             i+= 1
         plt.legend()
-    def plot_specific_spot(self,f)
+    def plot_specific_spot(self,key):
+        self.raman_spot_dict[key].plot_average()
         #print(file_list)
  
        
