@@ -80,6 +80,10 @@ class Raman :
             data_array[i,1] = intensity
             
             i += 1 
+        File_object = open(filename_string,"r")
+        lines = File_object.readlines()
+        print(self.get_metadata(lines))
+        print(self.get_file_spectra(lines))
     def get_metadata(self,file_iterator):
         metadata_values = {} #creates dictionary to return 
         for line in file_iterator:
