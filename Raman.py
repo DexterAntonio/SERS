@@ -20,70 +20,16 @@ class Raman :
         #build filename strings 
         filename_list= [self.files_location,self.filename]
         filename_string = "".join(filename_list)
+           
+        #File_object = open(filename_string,"r")
+        #iter_lines = iter(File_object.readlines())
+        #iter_lines = iter(lines)
+        with open(filename_string) as infile:
+            self.metadata_values = self.get_metadata(infile)
+            self.data_list = self.get_file_spectra(infile)
+        #print(self.get_metadata(lines))
+        #print(self.get_file_spectra(lines))
         
-        File_object = open(filename_string,"r") #load file 
-        lines = File_object.readlines() #build iterator
-                
-        data_array = np.zeros((1024,2),dtype=float) #this is for storing the data 
-        #intensity_array = np.zeros((1024,),dtype=float)
-
-            
-        on_metadata = True 
-        #this code is for processing the metadata and storing it in a dictionary 
-        filename_list= [self.files_location,self.filename]
-        filename_string = "".join(filename_list)
-        File_object = open(filename_string,"r")
-        lines = File_object.readlines()
-        i = 0 #line number 
-        for line in lines:
-            if(line=="\n"): #determines when metadata ends and spectra data begins 
-                on_metadata = False 
-                continue 
-            if(on_metadata):
-                data_name = []
-                data_values = []
-                colon_encountered = False 
-                iterline = iter(line)
-                for c in iterline: 
-                    if(not colon_encountered and c==":"):
-                        colon_encountered = True  
-                        c = next(iterline) 
-                        while(c==" "):
-                            c = next(iterline) #iterates through all whitespace between key and date 
-                            
-                    if (not colon_encountered): #if you are iterating through the key 
-                        data_name.append(c)
-                        continue 
-                    else:
-                        if(c=="\n"): #skip newline characters 
-                            continue 
-                        data_values.append(c)
-                        continue 
-                    
-                self.metadata_values["".join(data_name)]="".join(data_values)
-            #processing numerical data 
-            if(on_metadata):
-                continue 
-            splt_line = line.split("	")
-            if(len(splt_line) != 3): #skips nondata 
-                print("I am called")
-                print(line)
-                continue 
-            #if you go through one whole dataset  if(len(wavelength_list)!=0 and wavelength<wavelength_list[-1]): #if the wavelengths go back to the start point, restart things 
-            if(i>=1024):
-                self.data_list.append(data_array)
-                data_array = np.zeros((1024,2),dtype=float) #clears data array for next round 
-                i = 0 
-            wavelength = float(splt_line[0])
-            intensity = float(splt_line[1])
-            data_array[i,0] = wavelength
-            data_array[i,1] = intensity
-            
-            i += 1 
-        File_object = open(filename_string,"r")
-        lines = File_object.readlines()
-        print(self.get_metadata(lines))
-        print(self.get_file_spectra(lines))
     def get_metadata(self,file_iterator):
         metadata_values = {} #creates dictionary to return 
         for line in file_iterator:
@@ -110,7 +56,8 @@ class Raman :
                 
             metadata_values["".join(data_name)]="".join(data_values) #adds name and value to a dictionary 
         print("something is wrong with get_metadata")
-        return metadata_values    
+        return metadata_values  
+    
     def get_file_spectra(self,file_iterator):
         i =0 
         data_list = []
